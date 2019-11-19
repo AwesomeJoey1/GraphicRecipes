@@ -14,6 +14,8 @@ int WINDOW_HEIGHT = 1080;
 GLFWwindow* _window;
 Scene* _scene;
 
+GLuint _vao;
+
 std::string parseArgs(int argc, char** argv);
 void printInfo(const char* exeFile);
 
@@ -42,8 +44,9 @@ void mainLoop()
 {
     while( !glfwWindowShouldClose(_window) && glfwGetKey(_window, GLFW_KEY_ESCAPE) != GLFW_PRESS)
     {
-        _scene->update(glfwGetTime());
+        //_scene->update(glfwGetTime());
         _scene->render();
+
         glfwSwapBuffers(_window);
         glfwPollEvents();
     }
@@ -82,7 +85,6 @@ int main(int argc, char** argv) {
     }
 
     glfwMakeContextCurrent(_window);
-    // glfwSetKeyCallback(window, )
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {

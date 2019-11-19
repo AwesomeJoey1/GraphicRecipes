@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene.h"
+#include "shaderprogram.h"
 
 class SceneTriangle : public Scene
 {
@@ -16,4 +17,9 @@ public:
 
     void resize(int width, int height);
 
+private:
+    ShaderProgram* _shaderProg;
+    GLuint _vao;
+
+    void compileAndLinkShaders();
 };
