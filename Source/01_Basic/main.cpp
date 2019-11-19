@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "scenetriangle.h"
+#include "scenetriangletransforms.h"
 
 
 #include <string>
@@ -106,7 +107,7 @@ int main(int argc, char** argv) {
 std::string parseArgs(int argc, char** argv) {
     if (argc < 2) {
         printInfo(argv[0]);
-        exit(EXIT_FAILURE);
+        exit(0);
     }
 
     std::string recipe = argv[1];
@@ -114,7 +115,9 @@ std::string parseArgs(int argc, char** argv) {
     if(recipe == "triangle")
     {
         _scene = new SceneTriangle();
-        std::cout << "Here comes the TRIANGLE";
+    } else if (recipe =="triangle-transforms")
+    {
+        _scene = new SceneTriangleTransforms();
     }
     else {
         std::cerr << "Unknown recipe: " << recipe << "\n";
@@ -126,8 +129,12 @@ std::string parseArgs(int argc, char** argv) {
 
 void printInfo(const char* exeFile)
 {
-    std::cout << "Usage: " << exeFile << ": recipe-name\n\n"
+
+    std::cout << "\n*****************************************************************************************\n"
+                << "Usage: " << exeFile << ": recipe-name\n"
+                << "*****************************************************************************************\n\n"
                 << "Available recipes:\n"
-                << "triangle:\t\t       Simple triangle application\n"
+                << "triangle:\t\t\t\tSimple triangle application.\n"
+                << "triangle-transforms:\tTriangle application with affine transformations.\n"
                 << "further...\n";
 }

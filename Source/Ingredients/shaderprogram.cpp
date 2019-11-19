@@ -30,6 +30,9 @@ ShaderProgram::ShaderProgram(std::string sourceDir) : _programID(0), _isLinked(f
 
 ShaderProgram::~ShaderProgram()
 {
+    if (_programID == 0) return;
+
+
     for (auto shader : _shaders)
     {
         glDeleteShader(shader);
