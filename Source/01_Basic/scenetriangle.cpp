@@ -1,6 +1,5 @@
 #include <glad/glad.h>
 #include "scenetriangle.h"
-#include <memory>
 
 SceneTriangle::SceneTriangle()
 {

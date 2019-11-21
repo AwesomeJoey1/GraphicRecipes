@@ -188,3 +188,85 @@ void ShaderProgram::checkProgramStatus(GLuint programID)
         throw ShaderException("SHADER ERROR: Could not link program: " + logString);
     }
 }
+
+/*
+ * **************************** UNIFORMS ****************************
+ */
+
+void ShaderProgram::setUniform(const char *name, GLuint val)
+{
+    GLint loc = glGetUniformLocation(_programID, name);
+    glUniform1ui(loc, val);
+}
+
+void ShaderProgram::setUniform(const char *name, bool val)
+{
+    GLint loc = glGetUniformLocation(_programID, name);
+    glUniform1i(loc, val);
+}
+
+void ShaderProgram::setUniform(const char *name, int val)
+{
+    GLint loc = glGetUniformLocation(_programID, name);
+    glUniform1i(loc, val);
+}
+
+void ShaderProgram::setUniform(const char *name, float val)
+{
+    GLint loc = glGetUniformLocation(_programID, name);
+    glUniform1f(loc, val);
+}
+
+void ShaderProgram::setUniform(const char *name, float x, float y, float z)
+{
+    GLint loc = glGetUniformLocation(_programID, name);
+    glUniform3f(loc, x, y, z);
+}
+
+void ShaderProgram::setUniform(const char *name, glm::vec2 v)
+{
+    GLint loc = glGetUniformLocation(_programID, name);
+    glUniform2f(loc, v.x, v.y);
+}
+
+void ShaderProgram::setUniform(const char *name, glm::vec3 v)
+{
+    GLint loc = glGetUniformLocation(_programID, name);
+    glUniform3f(loc, v.x, v.y, v.z);
+}
+
+void ShaderProgram::setUniform(const char *name, glm::mat3 m)
+{
+    GLint loc = glGetUniformLocation(_programID, name);
+    glUniformMatrix3fv(loc, 1, GL_FALSE, &m[0][0]);
+}
+
+void ShaderProgram::setUniform(const char *name, glm::mat4 m)
+{
+    GLint loc = glGetUniformLocation(_programID, name);
+    glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
+}
+
+void ShaderProgram::printUniformInfo()
+{
+    GLint i;
+    GLint count;
+
+    GLint size; // size of the variable
+    GLenum type; // type of the variable (float, vec3 or mat4, etc)
+
+    const GLsizei bufSize = 16; // maximum name length
+    GLchar name[bufSize]; // variable name in GLSL
+    GLsizei length;
+
+
+    glGetProgramiv(_programID, GL_ACTIVE_UNIFORMS, &count);
+    printf("Active Uniforms: %d\n", count);
+
+    for (i = 0; i < count; i++)
+    {
+        glGetActiveUniform(_programID, (GLuint)i, bufSize, &length, &size, &type, name);
+
+        printf("Uniform #%d Type: %u Name: %s\n", i, type, name);
+    }
+}

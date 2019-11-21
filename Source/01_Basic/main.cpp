@@ -1,6 +1,5 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 
 #include "scenetriangle.h"
 #include "scenetriangletransforms.h"
@@ -9,7 +8,7 @@
 #include <string>
 #include <iostream>
 
-int WINDOW_WIDTH = 1920;
+int WINDOW_WIDTH = 1080;
 int WINDOW_HEIGHT = 1080;
 
 GLFWwindow* _window;
@@ -45,7 +44,7 @@ void mainLoop()
 {
     while( !glfwWindowShouldClose(_window) && glfwGetKey(_window, GLFW_KEY_ESCAPE) != GLFW_PRESS)
     {
-        //_scene->update(glfwGetTime());
+        _scene->update(glfwGetTime());
         _scene->render();
 
         glfwSwapBuffers(_window);
@@ -77,7 +76,7 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
-    _window = glfwCreateWindow(1920, 1080, recipe.c_str(), NULL, NULL);
+    _window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, recipe.c_str(), NULL, NULL);
     if (!_window)
     {
         glfwTerminate();
@@ -86,6 +85,7 @@ int main(int argc, char** argv) {
     }
 
     glfwMakeContextCurrent(_window);
+    glfwSetKeyCallback(_window, keyCallback);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {

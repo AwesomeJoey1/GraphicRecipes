@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+
 #include <stdexcept>
 #include <vector>
 
@@ -32,6 +34,20 @@ public:
     void loadShader(const char* shaderPath);
     void link();
     void use();
+
+    void setUniform(const char* name, GLuint val);
+    void setUniform(const char* name, bool val);
+    void setUniform(const char* name, int val);
+    void setUniform(const char* name, float val);
+    void setUniform(const char* name, float x, float y, float z);
+    void setUniform(const char* name, glm::vec2 v);
+    void setUniform(const char* name, glm::vec3 v);
+    void setUniform(const char* name, glm::vec4 v);
+    void setUniform(const char* name, glm::mat3 m);
+    void setUniform(const char* name, glm::mat4 m);
+
+    void printUniformInfo();
+
 
 private:
     GLuint _programID;
