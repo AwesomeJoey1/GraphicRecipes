@@ -3,6 +3,7 @@
 
 #include "scenetriangle.h"
 #include "scenetriangletransforms.h"
+#include "scenequad.h"
 
 
 #include <string>
@@ -118,6 +119,9 @@ std::string parseArgs(int argc, char** argv) {
     } else if (recipe =="triangle-transforms")
     {
         _scene = new SceneTriangleTransforms();
+    } else if(recipe == "quad")
+    {
+        _scene = new SceneQuad();
     }
     else {
         std::cerr << "Unknown recipe: " << recipe << "\n";
@@ -136,5 +140,6 @@ void printInfo(const char* exeFile)
                 << "Available recipes:\n"
                 << "triangle:\t\t\t\tSimple triangle application.\n"
                 << "triangle-transforms:\tTriangle application with affine transformations.\n"
+                << "quad:\t\t\t\t\tSimple full screen quad application.\n"
                 << "further...\n";
 }
