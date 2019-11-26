@@ -43,16 +43,25 @@ void SceneQuadBresenham::init()
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    
+
 
     // draw coordinate system for better visualization
     naiveLineAlgorithm(glm::ivec2(-12, 0), glm::ivec2(12, 0), glm::vec3(1.0f,1.0f,1.0f));
 
 
-    naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,15), glm::vec3(1.0f,1.0f,0.0f));
+    /*naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(-15,-15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(-15,15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,-15), glm::vec3(1.0f,1.0f,0.0f));
+*/
+    bresenhamLine(glm::ivec2(1,2), glm::ivec2(5,7), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(2,1), glm::ivec2(7,5), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(-1,2), glm::ivec2(-5,7), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(-2,1), glm::ivec2(-7,5), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(-1,-2), glm::ivec2(-5,-7), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(-2,-1), glm::ivec2(-7,-5), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(1,-2), glm::ivec2(5,-7), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(2,-1), glm::ivec2(7,-5), glm::vec3(1.0f,1.0f,0.4f));
 
     setPixel(0, 0, glm::vec3(1.0f, 0.0f, 0.0f)); // origin
 
@@ -103,7 +112,7 @@ void SceneQuadBresenham::loadAndCompileShaders()
 
 void SceneQuadBresenham::naiveLineAlgorithm(glm::ivec2 fromPoint, glm::ivec2 toPoint, glm::vec3 color)
 {
-    glm::vec2 translate = fromPoint;
+    glm::ivec2 translate = fromPoint;
     fromPoint = glm::ivec2(0);
     toPoint -= translate;
 
@@ -133,16 +142,83 @@ void SceneQuadBresenham::naiveLineAlgorithm(glm::ivec2 fromPoint, glm::ivec2 toP
     for (int x = 0; x <= toPoint.x; x++)
     {
         double y = m * x;
-        glm::vec2 mirroredPoint = glm::vec2(yMirror * x, round(xMirror * y));
-        glm::vec2 finalPoint = mirroredPoint + translate;
+        glm::ivec2 mirroredPoint = glm::ivec2(yMirror * x, round(xMirror * y));
+        glm::ivec2 finalPoint = mirroredPoint + translate;
         setPixel(finalPoint.x, finalPoint.y, color);
     }
 }
 
 void SceneQuadBresenham::bresenhamLine(glm::ivec2 fromPoint, glm::ivec2 toPoint, glm::vec3 color)
 {
+    int mirrorX = 1;        // mirrors the point on the x axis
+    int mirrorY = 1;        // mirrors the point on the y axis
+    bool switched = false;  // switch of x and y
 
+    glm::ivec2 translate = transform(fromPoint, toPoint, mirrorX, mirrorY, switched);
 
+    int x = 0;
+    int y = 0;
+    int deltaX = toPoint.x; // because fromPoint is translated to origin
+    int deltaY = toPoint.y;
+    int northEast = 2 * (deltaY - deltaX);
+    int east = 2* deltaY;
+    int d = 2* deltaY - deltaX;
+
+    setPixel(translate.x, translate.y, glm::vec3(1.0f, 0.5f, 0.5f)); // translate is the old starting point
+    while (x < toPoint.x)
+    {
+        if (d >= 0)
+        {
+            d+= northEast;
+            x++;
+            y++;
+        } else {
+            d+= east;
+            x++;
+        }
+
+        if (switched)
+        {
+            int a = mirrorY * y + translate.x;
+            int b = mirrorX * x + translate.y;
+            setPixel(mirrorY * y + translate.x, mirrorX * x + translate.y, color);
+        } else {
+            int a = mirrorY * x + translate.x;
+            int b = mirrorX * y + translate.y;
+            setPixel(mirrorY * x + translate.x, mirrorX * y + translate.y, color);
+        }
+
+    }
+}
+
+glm::ivec2
+SceneQuadBresenham::transform(glm::ivec2& fromPoint, glm::ivec2& toPoint, int& mirrorX, int& mirrorY, bool& switched)
+{
+    glm::vec2 translate = fromPoint;
+    fromPoint -= translate; // --> (0,0)
+    toPoint -= translate;
+
+    int x = toPoint.x;
+    int y = toPoint.y;
+
+    if (toPoint.x < 0)
+        mirrorY = -1;
+    if (toPoint.y < 0)
+        mirrorX = -1;
+    if (abs(toPoint.x) < abs(toPoint.y))
+        switched = true;
+
+    toPoint.x *= mirrorY;
+    toPoint.y *= mirrorX;
+
+    if (switched)
+    {
+        int tmp = toPoint.x;
+        toPoint.x = toPoint.y;
+        toPoint.y = tmp;
+    }
+
+    return translate;
 }
 
 void SceneQuadBresenham::setPixel(int x, int y, glm::vec3 color)
@@ -159,9 +235,9 @@ void SceneQuadBresenham::setPixel(int x, int y, glm::vec3 color)
     {
         std::cerr << "Index out of bounds for x = " << x << " and y = " << y << ". Coord range from: +-" << _coordSystemRange << "\n";
     } else {
-        // Else transform the y coordinate: translate(-imgSize) --> mirrorX(-1) --> -1 (for index reasons)
+        // Else transform the y coordinate: mirror(y) --> translate(_coordSystemRange)
         y = (-1 * y + _coordSystemRange);
-        int coord =y * _imgSize + x + _coordSystemRange;
         _image[y * _imgSize + x + _coordSystemRange] = color;
     }
 }
+
