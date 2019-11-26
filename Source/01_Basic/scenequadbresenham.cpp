@@ -6,6 +6,7 @@ SceneQuadBresenham::SceneQuadBresenham()
 {
     _shaderProg = new ShaderProgram("01_Basic");
     _imgSize = 32;
+    _coordSystemRange = _imgSize / 2;
     _image = std::vector<glm::vec3>(_imgSize*_imgSize, glm::vec3(0.0f));
 }
 
@@ -42,17 +43,18 @@ void SceneQuadBresenham::init()
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    
+
+    // draw coordinate system for better visualization
+    naiveLineAlgorithm(glm::ivec2(-12, 0), glm::ivec2(12, 0), glm::vec3(1.0f,1.0f,1.0f));
 
 
-    setPixel(2, 0, glm::vec3(1.0f, 0.0f, 0.0f));
-    setPixel(3, 1, glm::vec3(0.0f, 1.0f, 0.0f));
-    setPixel(4, 2, glm::vec3(0.0f, 0.0f, 1.0f));
-
-    naiveLineAlgorithm(glm::ivec2(30,30), glm::ivec2(15,15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,15), glm::vec3(1.0f,1.0f,0.0f));
-    naiveLineAlgorithm(glm::ivec2(0,30), glm::ivec2(15,15), glm::vec3(1.0f,1.0f,0.0f));
-    naiveLineAlgorithm(glm::ivec2(30,0), glm::ivec2(15,15), glm::vec3(1.0f,1.0f,0.0f));
-    naiveLineAlgorithm(glm::ivec2(5,25), glm::ivec2(12,12), glm::vec3(1.0f,1.0f,1.0f));
+    naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(-15,-15), glm::vec3(1.0f,1.0f,0.0f));
+    naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(-15,15), glm::vec3(1.0f,1.0f,0.0f));
+    naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,-15), glm::vec3(1.0f,1.0f,0.0f));
+
+    setPixel(0, 0, glm::vec3(1.0f, 0.0f, 0.0f)); // origin
 
     GLuint tex;
     glGenTextures(1, &tex);
@@ -120,14 +122,13 @@ void SceneQuadBresenham::naiveLineAlgorithm(glm::ivec2 fromPoint, glm::ivec2 toP
     }
 
 
-    float m = (toPoint.y - fromPoint.y) / (float)(toPoint.x - fromPoint.x);
-
-    if (m == 0.0f)
+    if ((toPoint.x - fromPoint.x) == 0)
     {
-        std::cout << "WARNING: Slope is 0. Naive doesn't work on vertical lines!\n";
+        std::cout << "WARNING: Slope is infinite. Naive doesn't work on vertical lines!\n";
         return;
     }
 
+    float m = (toPoint.y - fromPoint.y) / (float)(toPoint.x - fromPoint.x);
 
     for (int x = 0; x <= toPoint.x; x++)
     {
@@ -144,20 +145,23 @@ void SceneQuadBresenham::bresenhamLine(glm::ivec2 fromPoint, glm::ivec2 toPoint,
 
 }
 
-void SceneQuadBresenham::setPixel(unsigned int x, unsigned y, glm::vec3 color)
+void SceneQuadBresenham::setPixel(int x, int y, glm::vec3 color)
 {
     // Sooo... OpenGL coordinate system origin for the texture is the upper left corner (Texture is flipped).
     // Positive y is down and positive x is right.
-    // Therefore a little transformation is needed to display the texture/algorithm in a way were used to.
-    // Result == (0,0) bottom left corner.
+    // Therefore a little transformation is needed to display the texture/algorithm in a way we are used to.
+    // In order to show the algorithms work on every octant, (0,0) is chosen to be the midpoint of the grid.
+    // (!) origin of grid is 1 pixel off because of square texture.
 
     // First check whether the coordinates are inside the image boundary
-    if (x < 0 || y < 0 || x >= _imgSize || y >= _imgSize)
+    int range = (int) _coordSystemRange;
+    if (x < -range || y < -range || x >= range || y >= range)
     {
-        std::cerr << "Index out of bounds for x = " << x << " and y = " << y << ". Image width/height is: " << _imgSize << "\n";
+        std::cerr << "Index out of bounds for x = " << x << " and y = " << y << ". Coord range from: +-" << _coordSystemRange << "\n";
     } else {
         // Else transform the y coordinate: translate(-imgSize) --> mirrorX(-1) --> -1 (for index reasons)
-        y = (y -_imgSize) *(-1) -1;
-        _image[y * _imgSize + x] = color;
+        y = (-1 * y + _coordSystemRange);
+        int coord =y * _imgSize + x + _coordSystemRange;
+        _image[y * _imgSize + x + _coordSystemRange] = color;
     }
 }

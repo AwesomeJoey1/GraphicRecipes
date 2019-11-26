@@ -20,6 +20,7 @@ private:
     ShaderProgram* _shaderProg;
     GLuint _vao;
     unsigned int _imgSize;
+    unsigned int _coordSystemRange;
     std::vector<glm::vec3> _image;
 
 
@@ -27,6 +28,6 @@ private:
 
     void naiveLineAlgorithm(glm::ivec2 fromPoint, glm::ivec2 toPoint, glm::vec3 color);
     void bresenhamLine(glm::ivec2 fromPoint, glm::ivec2 toPoint, glm::vec3 color);
-    void setPixel(unsigned int x, unsigned y, glm::vec3 color);
+    void setPixel(int x, int y, glm::vec3 color);
 
 };
