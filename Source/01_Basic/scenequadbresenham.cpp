@@ -70,9 +70,6 @@ void SceneQuadBresenham::init()
     bresenhamLine(glm::ivec2(-13, -15), glm::ivec2(0,-9), glm::vec3(1.0f,1.0f,1.0f));
     bresenhamLine(glm::ivec2(0, -9), glm::ivec2(8,-11), glm::vec3(1.0f,1.0f,1.0f));
 
-
-
-
     /*naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(-15,-15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(-15,15), glm::vec3(1.0f,1.0f,0.0f));
@@ -135,6 +132,8 @@ void SceneQuadBresenham::loadAndCompileShaders()
     _shaderProg->use();
 }
 
+// Naive line algorithm that evaluates a parametric line function for every x in [x1, x2]
+// Just for completion..
 void SceneQuadBresenham::naiveLineAlgorithm(glm::ivec2 fromPoint, glm::ivec2 toPoint, glm::vec3 color)
 {
     glm::ivec2 translate = fromPoint;
@@ -173,6 +172,9 @@ void SceneQuadBresenham::naiveLineAlgorithm(glm::ivec2 fromPoint, glm::ivec2 toP
     }
 }
 
+// Line drawing algorithm of Jack Bresenham.
+// Decision of drawn pixel by evaluation of a decision variable based on the implicit line function
+// Note: only integer operations are used
 void SceneQuadBresenham::bresenhamLine(glm::ivec2 fromPoint, glm::ivec2 toPoint, glm::vec3 color)
 {
     int mirrorX = 1;        // mirrors the point on the x axis
@@ -204,18 +206,16 @@ void SceneQuadBresenham::bresenhamLine(glm::ivec2 fromPoint, glm::ivec2 toPoint,
 
         if (switched)
         {
-            int a = mirrorY * y + translate.x;
-            int b = mirrorX * x + translate.y;
             setPixel(mirrorY * y + translate.x, mirrorX * x + translate.y, color);
         } else {
-            int a = mirrorY * x + translate.x;
-            int b = mirrorX * y + translate.y;
             setPixel(mirrorY * x + translate.x, mirrorX * y + translate.y, color);
         }
 
     }
 }
 
+// Circle drawing algorithm of Jack Bresenham
+// Again, decision variable for pixel drawing based on the implicit function of a circle.
 void SceneQuadBresenham::bresenhamCircle(glm::ivec2 center, unsigned int radius, glm::vec3 color) {
     //glm::ivec2 translate = center;
 
@@ -243,6 +243,8 @@ void SceneQuadBresenham::bresenhamCircle(glm::ivec2 center, unsigned int radius,
     }
 }
 
+// Helper method for circle drawing
+// Symmetry of a circle gives 7 further points to draw
 void SceneQuadBresenham::drawCirclePixels(int x, int y, int cx, int cy, glm::vec3 color)
 {
     setPixel(x + cx, y + cy, color);      // 1st -|
@@ -255,7 +257,7 @@ void SceneQuadBresenham::drawCirclePixels(int x, int y, int cx, int cy, glm::vec
     setPixel(x + cx, -y + cy, color);     // 8th -|
 }
 
-
+// Helper method to set pixels of texture image
 void SceneQuadBresenham::setPixel(int x, int y, glm::vec3 color)
 {
     // Sooo... OpenGL coordinate system origin for the texture is the upper left corner (Texture is flipped).
@@ -276,7 +278,7 @@ void SceneQuadBresenham::setPixel(int x, int y, glm::vec3 color)
     }
 }
 
-
+// Helper method for transforming random position to first octant
 glm::ivec2 SceneQuadBresenham::transform(glm::ivec2& fromPoint, glm::ivec2& toPoint, int& mirrorX, int& mirrorY, bool& switched)
 {
     glm::ivec2 translate = fromPoint;
