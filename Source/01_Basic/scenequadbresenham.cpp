@@ -5,7 +5,7 @@
 SceneQuadBresenham::SceneQuadBresenham()
 {
     _shaderProg = new ShaderProgram("01_Basic");
-    _imgSize = 32;
+    _imgSize = 64;
     _coordSystemRange = _imgSize / 2;
     _image = std::vector<glm::vec3>(_imgSize*_imgSize, glm::vec3(0.0f));
 }
@@ -46,7 +46,31 @@ void SceneQuadBresenham::init()
 
 
     // draw coordinate system for better visualization
-    naiveLineAlgorithm(glm::ivec2(-12, 0), glm::ivec2(12, 0), glm::vec3(1.0f,1.0f,1.0f));
+    //bresenhamLine(glm::ivec2(-12,0), glm::ivec2(12,0), glm::vec3(1.0f,1.0f,1.0f));
+    //bresenhamLine(glm::ivec2(0,12), glm::ivec2(0,-12), glm::vec3(1.0f,1.0f,1.0f));
+
+    //head
+    bresenhamCircle(glm::ivec2(0,0), 28, glm::vec3(1.0f, 0.4f, 0.0f));
+
+
+    // eyes
+    bresenhamCircle(glm::ivec2(10,10), 5, glm::vec3(0.0f, 0.4f, 1.0f));
+    bresenhamCircle(glm::ivec2(10,10), 1, glm::vec3(0.0f, 0.0f, 1.0f));
+    bresenhamCircle(glm::ivec2(-10,10), 5, glm::vec3(0.0f, 0.4f, 1.0f));
+    bresenhamCircle(glm::ivec2(-10,10), 1, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    // eyebrows
+    bresenhamLine(glm::ivec2(18,15), glm::ivec2(10,17), glm::vec3(1.0f,1.0f,1.0f));
+    bresenhamLine(glm::ivec2(10,17), glm::ivec2(3,14), glm::vec3(1.0f,1.0f,1.0f));
+
+    bresenhamLine(glm::ivec2(-20,15), glm::ivec2(-15,20), glm::vec3(1.0f,1.0f,1.0f));
+    bresenhamLine(glm::ivec2(-15,20), glm::ivec2(-3,22), glm::vec3(1.0f,1.0f,1.0f));
+
+    // mouth
+    bresenhamLine(glm::ivec2(-13, -15), glm::ivec2(0,-9), glm::vec3(1.0f,1.0f,1.0f));
+    bresenhamLine(glm::ivec2(0, -9), glm::ivec2(8,-11), glm::vec3(1.0f,1.0f,1.0f));
+
+
 
 
     /*naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,15), glm::vec3(1.0f,1.0f,0.0f));
@@ -54,14 +78,15 @@ void SceneQuadBresenham::init()
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(-15,15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,-15), glm::vec3(1.0f,1.0f,0.0f));
 */
-    bresenhamLine(glm::ivec2(1,2), glm::ivec2(5,7), glm::vec3(1.0f,1.0f,0.4f));
+    // 8 octant test
+    /*bresenhamLine(glm::ivec2(1,2), glm::ivec2(5,7), glm::vec3(1.0f,1.0f,0.4f));
     bresenhamLine(glm::ivec2(2,1), glm::ivec2(7,5), glm::vec3(1.0f,1.0f,0.4f));
     bresenhamLine(glm::ivec2(-1,2), glm::ivec2(-5,7), glm::vec3(1.0f,1.0f,0.4f));
     bresenhamLine(glm::ivec2(-2,1), glm::ivec2(-7,5), glm::vec3(1.0f,1.0f,0.4f));
     bresenhamLine(glm::ivec2(-1,-2), glm::ivec2(-5,-7), glm::vec3(1.0f,1.0f,0.4f));
     bresenhamLine(glm::ivec2(-2,-1), glm::ivec2(-7,-5), glm::vec3(1.0f,1.0f,0.4f));
     bresenhamLine(glm::ivec2(1,-2), glm::ivec2(5,-7), glm::vec3(1.0f,1.0f,0.4f));
-    bresenhamLine(glm::ivec2(2,-1), glm::ivec2(7,-5), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(2,-1), glm::ivec2(7,-5), glm::vec3(1.0f,1.0f,0.4f));*/
 
     setPixel(0, 0, glm::vec3(1.0f, 0.0f, 0.0f)); // origin
 
@@ -164,7 +189,7 @@ void SceneQuadBresenham::bresenhamLine(glm::ivec2 fromPoint, glm::ivec2 toPoint,
     int east = 2* deltaY;
     int d = 2* deltaY - deltaX;
 
-    setPixel(translate.x, translate.y, glm::vec3(1.0f, 0.5f, 0.5f)); // translate is the old starting point
+    setPixel(translate.x, translate.y, color); // translate is the old starting point
     while (x < toPoint.x)
     {
         if (d >= 0)
@@ -191,10 +216,70 @@ void SceneQuadBresenham::bresenhamLine(glm::ivec2 fromPoint, glm::ivec2 toPoint,
     }
 }
 
-glm::ivec2
-SceneQuadBresenham::transform(glm::ivec2& fromPoint, glm::ivec2& toPoint, int& mirrorX, int& mirrorY, bool& switched)
+void SceneQuadBresenham::bresenhamCircle(glm::ivec2 center, unsigned int radius, glm::vec3 color) {
+    //glm::ivec2 translate = center;
+
+    int x = 0;
+    int y = radius;
+    int d = 5 - 4*radius;
+    int deltaE, deltaSE;
+
+    drawCirclePixels(x , y, center.x, center.y, color);
+
+    while (y > x)
+    {
+        if (d >= 0)
+        {
+            deltaSE = 4 * (2*(x-y) + 5);
+            d += deltaSE;
+            x++;
+            y--;
+        } else {
+            deltaE = 4 * (2*x +3);
+            d += deltaE;
+            x++;
+        }
+        drawCirclePixels(x , y, center.x, center.y, color);
+    }
+}
+
+void SceneQuadBresenham::drawCirclePixels(int x, int y, int cx, int cy, glm::vec3 color)
 {
-    glm::vec2 translate = fromPoint;
+    setPixel(x + cx, y + cy, color);      // 1st -|
+    setPixel(y + cx, x + cy, color);      // 2nd  |
+    setPixel(-y + cx, x + cy, color);     // 3rd  |
+    setPixel(-x + cx, y + cy, color);     // 4th  |===     OCTANT
+    setPixel(-x + cx, -y + cy, color);    // 5th  |
+    setPixel(-y + cx, -x + cy, color);    // 6th  |
+    setPixel(y + cx, -x + cy, color);     // 7th  |
+    setPixel(x + cx, -y + cy, color);     // 8th -|
+}
+
+
+void SceneQuadBresenham::setPixel(int x, int y, glm::vec3 color)
+{
+    // Sooo... OpenGL coordinate system origin for the texture is the upper left corner (Texture is flipped).
+    // Positive y is down and positive x is right.
+    // Therefore a little transformation is needed to display the texture/algorithm in a way we are used to.
+    // In order to show the algorithms work on every octant, (0,0) is chosen to be the midpoint of the grid.
+    // (!) origin of grid is 1 pixel off because of square texture.
+
+    // First check whether the coordinates are inside the image boundary
+    int range = (int) _coordSystemRange;
+    if (x < -range || y < -range || x >= range || y >= range)
+    {
+        std::cerr << "Index out of bounds for x = " << x << " and y = " << y << ". Coord range from: +-" << _coordSystemRange << "\n";
+    } else {
+        // Else transform the y coordinate: mirror(y) --> translate(_coordSystemRange)
+        y = (-1 * y + _coordSystemRange);
+        _image[y * _imgSize + x + _coordSystemRange] = color;
+    }
+}
+
+
+glm::ivec2 SceneQuadBresenham::transform(glm::ivec2& fromPoint, glm::ivec2& toPoint, int& mirrorX, int& mirrorY, bool& switched)
+{
+    glm::ivec2 translate = fromPoint;
     fromPoint -= translate; // --> (0,0)
     toPoint -= translate;
 
@@ -219,25 +304,5 @@ SceneQuadBresenham::transform(glm::ivec2& fromPoint, glm::ivec2& toPoint, int& m
     }
 
     return translate;
-}
-
-void SceneQuadBresenham::setPixel(int x, int y, glm::vec3 color)
-{
-    // Sooo... OpenGL coordinate system origin for the texture is the upper left corner (Texture is flipped).
-    // Positive y is down and positive x is right.
-    // Therefore a little transformation is needed to display the texture/algorithm in a way we are used to.
-    // In order to show the algorithms work on every octant, (0,0) is chosen to be the midpoint of the grid.
-    // (!) origin of grid is 1 pixel off because of square texture.
-
-    // First check whether the coordinates are inside the image boundary
-    int range = (int) _coordSystemRange;
-    if (x < -range || y < -range || x >= range || y >= range)
-    {
-        std::cerr << "Index out of bounds for x = " << x << " and y = " << y << ". Coord range from: +-" << _coordSystemRange << "\n";
-    } else {
-        // Else transform the y coordinate: mirror(y) --> translate(_coordSystemRange)
-        y = (-1 * y + _coordSystemRange);
-        _image[y * _imgSize + x + _coordSystemRange] = color;
-    }
 }
 
