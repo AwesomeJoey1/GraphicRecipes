@@ -7,7 +7,7 @@ SceneQuadBresenham::SceneQuadBresenham()
     _shaderProg = new ShaderProgram("01_Basic");
     _imgSize = 64;
     _coordSystemRange = _imgSize / 2;
-    _image = std::vector<glm::vec3>(_imgSize*_imgSize, glm::vec3(0.0f));
+    _image = std::vector<glm::vec3>(_imgSize*_imgSize, glm::vec3(1.0f));
 }
 
 void SceneQuadBresenham::init()
@@ -44,47 +44,14 @@ void SceneQuadBresenham::init()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-
-    // draw coordinate system for better visualization
-    //bresenhamLine(glm::ivec2(-12,0), glm::ivec2(12,0), glm::vec3(1.0f,1.0f,1.0f));
-    //bresenhamLine(glm::ivec2(0,12), glm::ivec2(0,-12), glm::vec3(1.0f,1.0f,1.0f));
-
-    //head
-    bresenhamCircle(glm::ivec2(0,0), 28, glm::vec3(1.0f, 0.4f, 0.0f));
-
-
-    // eyes
-    bresenhamCircle(glm::ivec2(10,10), 5, glm::vec3(0.0f, 0.4f, 1.0f));
-    bresenhamCircle(glm::ivec2(10,10), 1, glm::vec3(0.0f, 0.0f, 1.0f));
-    bresenhamCircle(glm::ivec2(-10,10), 5, glm::vec3(0.0f, 0.4f, 1.0f));
-    bresenhamCircle(glm::ivec2(-10,10), 1, glm::vec3(0.0f, 0.0f, 1.0f));
-
-    // eyebrows
-    bresenhamLine(glm::ivec2(18,15), glm::ivec2(10,17), glm::vec3(1.0f,1.0f,1.0f));
-    bresenhamLine(glm::ivec2(10,17), glm::ivec2(3,14), glm::vec3(1.0f,1.0f,1.0f));
-
-    bresenhamLine(glm::ivec2(-20,15), glm::ivec2(-15,20), glm::vec3(1.0f,1.0f,1.0f));
-    bresenhamLine(glm::ivec2(-15,20), glm::ivec2(-3,22), glm::vec3(1.0f,1.0f,1.0f));
-
-    // mouth
-    bresenhamLine(glm::ivec2(-13, -15), glm::ivec2(0,-9), glm::vec3(1.0f,1.0f,1.0f));
-    bresenhamLine(glm::ivec2(0, -9), glm::ivec2(8,-11), glm::vec3(1.0f,1.0f,1.0f));
+    drawHead();
+    drawCoordinateSystem();
 
     /*naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(-15,-15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(-15,15), glm::vec3(1.0f,1.0f,0.0f));
     naiveLineAlgorithm(glm::ivec2(0,0), glm::ivec2(15,-15), glm::vec3(1.0f,1.0f,0.0f));
 */
-    // 8 octant test
-    /*bresenhamLine(glm::ivec2(1,2), glm::ivec2(5,7), glm::vec3(1.0f,1.0f,0.4f));
-    bresenhamLine(glm::ivec2(2,1), glm::ivec2(7,5), glm::vec3(1.0f,1.0f,0.4f));
-    bresenhamLine(glm::ivec2(-1,2), glm::ivec2(-5,7), glm::vec3(1.0f,1.0f,0.4f));
-    bresenhamLine(glm::ivec2(-2,1), glm::ivec2(-7,5), glm::vec3(1.0f,1.0f,0.4f));
-    bresenhamLine(glm::ivec2(-1,-2), glm::ivec2(-5,-7), glm::vec3(1.0f,1.0f,0.4f));
-    bresenhamLine(glm::ivec2(-2,-1), glm::ivec2(-7,-5), glm::vec3(1.0f,1.0f,0.4f));
-    bresenhamLine(glm::ivec2(1,-2), glm::ivec2(5,-7), glm::vec3(1.0f,1.0f,0.4f));
-    bresenhamLine(glm::ivec2(2,-1), glm::ivec2(7,-5), glm::vec3(1.0f,1.0f,0.4f));*/
-
     setPixel(0, 0, glm::vec3(1.0f, 0.0f, 0.0f)); // origin
 
     GLuint tex;
@@ -306,5 +273,54 @@ glm::ivec2 SceneQuadBresenham::transform(glm::ivec2& fromPoint, glm::ivec2& toPo
     }
 
     return translate;
+}
+
+void SceneQuadBresenham::drawHead()
+{
+    //head
+    bresenhamCircle(glm::ivec2(0,0), 28, glm::vec3(1.0f, 0.4f, 0.0f));
+
+
+    // eyes
+    bresenhamCircle(glm::ivec2(10,10), 5, glm::vec3(0.0f, 0.4f, 1.0f));
+    bresenhamCircle(glm::ivec2(10,10), 1, glm::vec3(0.0f, 0.0f, 1.0f));
+    bresenhamCircle(glm::ivec2(-10,10), 5, glm::vec3(0.0f, 0.4f, 1.0f));
+    bresenhamCircle(glm::ivec2(-10,10), 1, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    // eyebrows
+    bresenhamLine(glm::ivec2(18,15), glm::ivec2(10,17), glm::vec3(1.0f,0.0f,1.0f));
+    bresenhamLine(glm::ivec2(10,17), glm::ivec2(3,14), glm::vec3(1.0f,0.0f,1.0f));
+
+    bresenhamLine(glm::ivec2(-20,15), glm::ivec2(-15,20), glm::vec3(1.0f,0.0f,1.0f));
+    bresenhamLine(glm::ivec2(-15,20), glm::ivec2(-3,22), glm::vec3(1.0f,0.0f,1.0f));
+
+    // mouth
+    bresenhamLine(glm::ivec2(-13, -15), glm::ivec2(0,-9), glm::vec3(1.0f,0.0f,1.0f));
+    bresenhamLine(glm::ivec2(0, -9), glm::ivec2(8,-11), glm::vec3(1.0f,0.0f,1.0f));
+}
+
+void SceneQuadBresenham::drawThugGlasses()
+{
+
+}
+
+void SceneQuadBresenham::drawCoordinateSystem()
+{
+    // draw coordinate system for better visualization
+    bresenhamLine(glm::ivec2(-12,0), glm::ivec2(12,0), glm::vec3(0.0f,0.0f,0.0f));
+    bresenhamLine(glm::ivec2(0,12), glm::ivec2(0,-12), glm::vec3(0.0f,0.0f,0.0f));
+}
+
+void SceneQuadBresenham::drawOctantTest()
+{
+    // 8 octant test
+    bresenhamLine(glm::ivec2(1,2), glm::ivec2(5,7), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(2,1), glm::ivec2(7,5), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(-1,2), glm::ivec2(-5,7), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(-2,1), glm::ivec2(-7,5), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(-1,-2), glm::ivec2(-5,-7), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(-2,-1), glm::ivec2(-7,-5), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(1,-2), glm::ivec2(5,-7), glm::vec3(1.0f,1.0f,0.4f));
+    bresenhamLine(glm::ivec2(2,-1), glm::ivec2(7,-5), glm::vec3(1.0f,1.0f,0.4f));
 }
 

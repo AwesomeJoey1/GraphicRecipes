@@ -5,6 +5,7 @@
 #include "scenetriangletransforms.h"
 #include "scenequad.h"
 #include "scenequadbresenham.h"
+#include "scenequadaliasing.h"
 
 #include <string>
 #include <iostream>
@@ -125,6 +126,9 @@ std::string parseArgs(int argc, char** argv) {
     } else if(recipe == "quad-bresenham")
     {
         _scene = new SceneQuadBresenham();
+    } else if(recipe == "quad-aliasing")
+    {
+        _scene = new SceneQuadAliasing();
     }
     else {
         std::cerr << "Unknown recipe: " << recipe << "\n";
@@ -141,9 +145,10 @@ void printInfo(const char* exeFile)
                 << "Usage: " << exeFile << ": recipe-name\n"
                 << "*****************************************************************************************\n\n"
                 << "Available recipes:\n"
-                << "triangle:\t\t\t\tSimple triangle application.\n"
-                << "triangle-transforms:\tTriangle application with affine transformations.\n"
-                << "quad:\t\t\t\t\tSimple full screen quad application.\n"
+                << "triangle:\t\t\tSimple triangle application.\n"
+                << "triangle-transforms:\t\tTriangle application with affine transformations.\n"
+                << "quad:\t\t\t\tSimple full screen quad application.\n"
                 << "quad-bresenham:\t\t\tDrawing with Bresenham algorithm on full screen quad.\n"
+                << "quad-aliasing:\t\t\tDisplay of different anti-aliasing methods.\n"
                 << "further...\n";
 }

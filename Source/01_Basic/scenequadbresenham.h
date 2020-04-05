@@ -33,4 +33,10 @@ private:
     void setPixel(int x, int y, glm::vec3 color);
     glm::ivec2 transform(glm::ivec2& fromPoint, glm::ivec2& toPoint, int& mirrorX, int& mirrorY, bool& switched);
 
+    // predefined drawing structures
+    void drawHead();
+    void drawThugGlasses();
+    void drawCoordinateSystem();
+    void drawOctantTest();
+
 };
