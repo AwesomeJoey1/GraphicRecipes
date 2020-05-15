@@ -21,19 +21,18 @@ private:
     GLuint _vao;
     unsigned int _imgSize;
     unsigned int _samplingScale;
-    unsigned int _imgScale;
-    unsigned int _coordSystemRange;
     std::vector<glm::vec3> _image, _superSampledImage;
+    std::vector<float> _filter3x3, _filter5x5, _filter7x7;
 
 
     void loadAndCompileShaders();
 
     void downsample();
 
-    void bresenhamLine(glm::ivec2 fromPoint, glm::ivec2 toPoint, glm::vec3 color, unsigned int samplingScale=1);
-    void bresenhamCircle(glm::ivec2 center, unsigned int radius, glm::vec3 color, unsigned int samplingScale=1);
-    void drawCirclePixels(int x, int y, int cx, int cy, const glm::vec3& color, unsigned int samplingScale);
-    void setPixel(int x, int y, glm::vec3 color, int samplingScale=1);
+    void bresenhamLine(glm::ivec2 fromPoint, glm::ivec2 toPoint, glm::vec3 color);
+    void bresenhamCircle(glm::ivec2 center, unsigned int radius, glm::vec3 color);
+    void drawCirclePixels(int x, int y, int cx, int cy, const glm::vec3& color);
+    void setPixel(int x, int y, glm::vec3 color);
     glm::ivec2 transform(glm::ivec2& fromPoint, glm::ivec2& toPoint, int& mirrorX, int& mirrorY, bool& switched);
 
 };
